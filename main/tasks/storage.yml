@@ -1,0 +1,46 @@
+- name: LVM | ID root VG
+  ansible.builtin.set_fact:
+    root_vg: "{{ ansible_lvm.lvs['root'].vg }}"
+
+- name: LVM | ID Root Disk Device
+  ansible.builtin.set_fact:
+    root_pv: "{{ item.key }}"
+    root_sd: "{{ item.key[:-1] }}"
+  loop: "{{ ansible_lvm.pvs | dict2items }}"
+  when: item.value.vg == root_vg
+
+- name: LVM | root VG, PV, and disk device
+  ansible.builtin.debug:
+    msg: "root vg: {{ root_vg }}, root pv: {{ root_pv }}, root disk: {{ root_sd }}"
+
+- name: LVM | Fix Unresized root PV
+  ansible.builtin.include_tasks: "lvm_rootpv.yml"
+  when:
+    - fix_root_pv
+
+- name: LVM | Inventory vgs
+  ansible.builtin.set_fact:
+    lsvgs: "{{ ansible_lvm.vgs | list | default([]) }}"
+    datavgs: "{{ volume_groups | combine(volume_groups | default({})) | list | default([]) }}"
+
+- name: LVM | List missing data vgs
+  ansible.builtin.set_fact:
+    missing_vgs: "{{ datavgs | difference(lsvgs) | default('[]') }}"
+
+- name: LVM | Create vgs
+  ansible.builtin.include_tasks: "lvm_pvgs.yml"
+  when:
+    - missing_vgs | length > 0
+
+- name: LVM | Create lvs fs
+  ansible.builtin.include_tasks: "lvm_lvfs.yml"
+
+- name: Path | create
+  ansible.builtin.file:
+    path: '{{ item.value.path }}'
+    state: directory
+    mode: '{{ item.value.mode }}'
+    owner: '{{ item.value.owner }}'
+    group: '{{ item.value.group }}'
+  with_dict: '{{ local_paths }}'
+#

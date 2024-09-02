@@ -1,0 +1,71 @@
+---
+
+#
+- name: Import Repo GPG keys with_dict.
+  set_fact:
+    rpmkeys: "{{ item.value.gpg_key }}"
+  with_dict: "{{ repos_enabled }}"
+  when: item.value.gpg_key is defined
+
+- name: Import Repo GPG keys 
+  rpm_key:
+    key: "{{ item }}"
+    state: present
+  with_items: "{{ rpmkeys }}"
+
+- name: Enable Repository
+  ansible.builtin.yum_repository:
+    name: "{{ item.value.name }}"
+    baseurl: "{{ item.value.baseurl }}"
+    description: "{{ item.value.description }}"
+    # gpgcheck: false
+  with_dict: '{{ repos_enabled | default({}, true) }}'
+ 
+- name: DNF | install packages
+  ansible.builtin.dnf:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ packages_installed | default([], true) }}'
+
+- name: DNF | uninstall packages
+  ansible.builtin.dnf:
+    name: '{{ item }}'
+    state: absent
+  with_items: '{{ packages_uninstalled | default([], true) }}'
+
+- name: Toggle SELinux
+  ansible.posix.selinux:
+    state: '{{ selinux_config }}'
+    policy: 'targeted'
+
+- name: Services disabled
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+    state: stopped
+    daemon_reload: true
+  with_items: '{{ services_disabled | default([], true) }}'
+
+- name: Services enabled
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    state: started
+    daemon_reload: true
+  with_items: '{{ services_enabled | default([], true) }}'
+
+- name: Firewalld | permit ports
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    permanent: true
+    state: enabled
+  with_items: '{{ firewall_allow_ports | default([], true) }}'
+
+- name: Mail | set relayhost
+  ansible.builtin.lineinfile:
+    path: '/etc/postfix/main.cf'
+    regexp: '^relayhost = '
+    line: 'relayhost = {{ mail_relay }}'
+    backup: true
+  notify: Restart service - postfix
+

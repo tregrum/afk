@@ -1,0 +1,10 @@
+*.retry
+roles/*/
+*.swp
+.env
+.vagrant
+*.log
+logs/*
+autoinventory
+__pycache__/
+*.py[cod]

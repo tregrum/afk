@@ -1,0 +1,49 @@
+---
+
+- name: MOTD | Lean
+  ansible.builtin.template:
+    src: 'motd.j2'
+    dest: '/etc/motd'
+    owner: 'root'
+    group: 'root'
+    mode: '0744'
+
+# - name: MOTD | Remove Crontab 
+#   ansible.builtin.file:
+#     path: '{{ item }}'
+#     state: absent
+#   with_items:
+#     - /etc/cron.d/dumbthing
+
+- name: MOTD | Remove RH SPAM
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - /etc/motd.d/cockpit
+    - /etc/motd.d/insights-client
+
+- name: Profile | edit mode
+  ansible.builtin.copy:
+    content: 'set editing-mode vi'
+    dest: /root/.inputrc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Profile | root dig
+  ansible.builtin.copy:
+    content: '+search +short'
+    dest: /root/.digrc
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Profile | root profile
+  ansible.builtin.copy:
+    src: root_bashprofile
+    dest: /root/.bash_profile
+    mode: '0644'
+    owner: root
+    group: root
+    backup: true

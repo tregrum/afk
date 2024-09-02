@@ -1,0 +1,135 @@
+---
+#
+# ANSIBLE FIELD KIT
+# Example Configuration 
+#
+fix_root_pv: true
+sudoers_group: 'sudo_web_admins'
+mail_relay: 'mailrelay.example.com'
+dns_domain_search: 'example.com'
+selinux_config: 'disabled' # permissive
+timezone: 'America/Detroit'
+ca_file: 'orgca.pem' 
+force_orgca: false
+# some other role variable
+transfer_agent_version: '1.2.3.4-5'
+
+# packages_installed: ['docker-ce', 'docker-compose-plugin']
+packages_installed: ['firewalld', 'nginx', 'jq', 's-nail', 'nmon', 'lsof', 'postfix']
+# packages_uninstalled: []
+services_enabled: ['firewalld', 'postfix']
+# services_disabled: ['setroubleshoot']
+firewall_allow_ports: ['1234/tcp', '443/tcp', '80/tcp']
+
+#
+updates:
+  install: true
+  schedule: '*-*-16 4:30'
+  reboot: true
+
+repos_enabled:
+  epel:
+    name: 'epel'
+    description: 'EPEL YUM repo'
+    baseurl: 'https://download.fedoraproject.org/pub/epel/$releasever/Everything/$basearch/'
+    gpg_key: 'https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}'
+  # remi:
+  #   name: 'remi'
+  #   description: 'Remi Repo'
+  #   baseurl: 'https://rpms.remirepo.net/enterprise/9/remi/x86_64/repoview/'
+  #   gpg_key: 'https://rpms.remirepo.net/enterprise/9/RPM-GPG-KEY-remi'
+  # docker: 
+  #   name: 'Docker'
+  #   description: 'Docker Repo'
+  #   baseurl: 'https://download.docker.com/linux/centos/9/x86_64/stable/'
+
+volume_groups:
+  data:
+    name: 'data'
+    size_gb: 30
+  food:
+    name: 'food'
+    size_gb: 20
+  drinks:
+    name: 'drinks'
+    size_gb: 10
+
+local_mounts:
+  web:
+    size: .2
+    path: '/var/www/htdocs'
+    lv: web
+    vg: data
+
+network_mounts:
+  # home:
+  #   path: '/home'
+  #   host: nfserver
+  #   src:  /export/home
+
+local_groups:
+  web:
+    name: 'web'
+    gid: 1800
+  devs:
+    name: 'devs'
+    gid: 1200
+
+group_members:
+  # web:
+    # 'svc-filepusher': 'AD Access User'
+
+#
+local_accounts:
+  svc-api:
+    name: svc-api
+    create_home: true
+    home: /var/lib/api
+    uid: 1111  
+    group: web
+    # password: '{{ vault_secret_thing_one }}'
+    generate_ssh_key: true
+    ssh_key_type: ed25519
+    # groups: web,service,apisupportgroup
+    comment: 'Service Account Web App'
+
+# vault_secret_thing_one: !vault |
+#           $ANSIBLE_VAULT;1.1;AES256
+#           33633236393439623361613765316363386532663830643132656366616631386331613661666163
+#           3763333735653238336263316230613530323534346431610a363330626235646461323932643835
+#           32313663663935633965376134666130353137363934646633643062396132306362623537313735
+#           6138396261373439330a336335393235663266333966396366616466656435393564633033663862
+#           39336236336434323039393638396561353963343633393235323662363035613638343965333631
+#           3436643762303132613337666661346235316162663130323564
+
+local_paths:
+  nmon:
+    path: '/data/perf/nmon/'
+    state: 'directory'
+    owner: root
+    group: root
+    mode: '0755'
+  web:
+    path: '/var/www/htdocs'
+    state: 'directory'
+    owner: svc-api
+    group: web 
+    mode: '0755'
+
+crontab_entries:
+  nmon:
+    'root 00 00 * * * cd /data/perf/nmon;/usr/bin/nmon -ft > /dev/null 2>&1'
+
+local_acls:
+  # web:
+  #   path: '/var/www/htdocs'
+  #   entity: 'devs'
+  #   etype: group 
+  #   permissions: 'rwx'
+  # export:
+  #   path: '/export/data'
+  #   entity: 'devs'
+  #   etype: group
+  #   permissions: 'rwx'
+  #
+  #

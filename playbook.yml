@@ -1,0 +1,12 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Common Tasks
+  hosts: all
+  gather_facts: true
+  become: true
+  ignore_errors: '{{ ansible_check_mode }}'
+  roles:
+   - main
+  # - transfer_agent
+
+#

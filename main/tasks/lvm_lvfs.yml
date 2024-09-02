@@ -1,0 +1,32 @@
+- name: LVM | debug info
+  ansible.builtin.debug:
+    msg:
+      - "{{ item.value.vg | default(root_vg) }}"
+      - "/dev/{{ item.value.vg | default(root_vg) }}/{{ item.value.lv }}"
+      - "{{ item.value.fs | default('xfs') }}"
+  with_dict: "{{ local_mounts }}"
+
+- name: LVM | Created logical volumes
+  community.general.lvol:
+    vg: "{{  item.value.vg | default(root_vg) }}"
+    lv: "{{ item.value.lv }}"
+    size: "{{ ((item.value.size) * 1024 | int) }}m"
+    state: present
+    shrink: false
+  with_dict: "{{ local_mounts }}"
+
+- name: Filesystem | mkfs
+  community.general.filesystem:
+    dev: "/dev/{{ item.value.vg | default(root_vg) }}/{{ item.value.lv }}"
+    fstype: "{{ item.value.fs | default('xfs') }}"
+  with_dict: "{{ local_mounts }}"
+
+- name: Filesystem | mount
+  ansible.posix.mount:
+    name: "{{ item.value.path }}"
+    src: "/dev/mapper/{{ item.value.vg | default(root_vg) }}-{{ item.value.lv }}"
+    fstype: "{{ item.value.fs | default('xfs') }}"
+    opts: "{{ item.value.fsopts | default('nodiratime,nodev') }}"
+    state: mounted
+  with_dict: "{{ local_mounts }}"
+#

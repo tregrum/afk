@@ -1,0 +1,24 @@
+---
+
+- name: Restart service - NetworkManager
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: restarted
+
+- name: Restart service - rsyslog
+  ansible.builtin.systemd:
+    name: rsyslog 
+    state: restarted
+
+- name: Restart service - postfix
+  ansible.builtin.systemd:
+    name: postfix
+    state: restarted
+
+- name: Update Trusty CA Certs
+  ansible.builtin.command:
+    cmd: update-ca-trust
+  check_mode: false
+  changed_when: true
+
+

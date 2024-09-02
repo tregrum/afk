@@ -1,0 +1,19 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+
+alias xt='export TERM=xterm'
+
+# Set up shell environment:
+HOSTNAME=$(hostname)
+
+if [[ $- == *i* ]] ; then
+    stty erase "^?"
+    HISTFILE=/root/.sh_history
+    HISTSIZE=10240
+    export HISTFILE HISTSIZE 
+fi
+

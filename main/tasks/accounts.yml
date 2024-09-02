@@ -1,0 +1,35 @@
+- name: Group exists
+  ansible.builtin.group:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ local_groups | default([], true) }}'
+
+- name: Accounts | user add
+  ansible.builtin.user:
+    name: '{{ item.value.name }}'
+    uid: '{{ item.value.uid }}'
+    home: '{{ item.value.home }}'
+    password: '{{ item.value.password | default(omit) }}'
+    create_home: '{{ item.value.create_home | default(omit) }}'
+    group: '{{ item.value.group | default(omit) }}'
+    local: '{{ item.value.local | default(omit) }}'
+    generate_ssh_key: '{{ item.value.generate_ssh_key | default(omit) }}'
+    ssh_key_type: '{{ item.value.ssh_key_type | default(omit) }}'
+    groups: '{{ item.value.groups | default(omit) }}'
+    comment: '{{ item.value.comment | default(omit) }}'
+  with_dict: '{{ local_accounts | default({}, true) }}'
+
+- name: Accounts | group add
+  ansible.builtin.user:
+    name: '{{ item.key }}'
+    groups: '{{ item.value }}'
+    append: true
+  with_items: '{{ group_members | default([], true) }}'
+
+- name: Sudoers Create
+  community.general.sudoers:
+    name: '{{ sudoers_group }}'
+    commands: ALL
+    group: '{{ sudoers_group }}'
+    state: present
+#
