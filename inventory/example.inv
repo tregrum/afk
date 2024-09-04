@@ -1,0 +1,4 @@
+[example]
+woo:2222 ansible_ssh_host=localhost my_host_alias=woo
+foo:5555 ansible_ssh_host=localhost my_host_alias=foo
+
