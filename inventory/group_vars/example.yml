@@ -61,7 +61,7 @@ local_mounts:
     lv: web
     vg: data
 
-network_mounts:
+# network_mounts:
   # home:
   #   path: '/home'
   #   host: nfserver
@@ -75,7 +75,7 @@ local_groups:
     name: 'devs'
     gid: 1200
 
-group_members:
+# group_members:
   # web:
     # 'svc-filepusher': 'AD Access User'
 
@@ -120,7 +120,7 @@ crontab_entries:
   nmon:
     'root 00 00 * * * cd /data/perf/nmon;/usr/bin/nmon -ft > /dev/null 2>&1'
 
-local_acls:
+# local_acls:
   # web:
   #   path: '/var/www/htdocs'
   #   entity: 'devs'

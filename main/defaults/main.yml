@@ -1,0 +1,42 @@
+---
+#
+# ANSIBLE FIELD KIT
+# Defaults
+#
+fix_root_pv: false
+# sudoers_group:
+# mail_relay:
+# dns_domain_search:
+# selinux_config:
+# timezone:
+# ca_file:
+# force_orgca:
+#
+packages_installed: []
+packages_uninstalled: []
+services_enabled: []
+services_disabled: []
+firewall_allow_ports: []
+  #
+updates:
+  #
+repos_enabled:
+  #
+volume_groups:
+  #
+local_mounts:
+  #
+network_mounts:
+  #
+local_groups:
+  #
+group_members:
+  #
+local_accounts:
+  #
+local_paths:
+  #
+crontab_entries:
+  #
+local_acls:
+  #

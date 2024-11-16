@@ -21,10 +21,10 @@
 
 - name: Accounts | group add
   ansible.builtin.user:
-    name: '{{ item.key }}'
-    groups: '{{ item.value }}'
+    name: '{{ item.1 }}'
+    groups: '{{ item.0.key }}'
     append: true
-  with_items: '{{ group_members | default([], true) }}'
+  loop: "{{ group_members | dict2items | subelements('value') }}"
 
 - name: Sudoers Create
   community.general.sudoers:
