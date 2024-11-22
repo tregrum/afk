@@ -1,6 +1,12 @@
 - name: LVM | ID root VG
   ansible.builtin.set_fact:
     root_vg: "{{ ansible_lvm.lvs['root'].vg }}"
+    root_vg: >-
+      {{ (ansible_lvm.lvs | dict2items 
+        |selectattr('key', 'in', ['lvroot', 'root'])
+        | map(attribute='value.vg')
+        | first) |default(None)
+       }}
 
 - name: LVM | ID Root Disk Device
   ansible.builtin.set_fact:
