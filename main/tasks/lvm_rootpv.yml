@@ -9,17 +9,15 @@
     msg: "{{ disk_info.disk }}"
 
 - name: Fixed Unexpanded Root PV
-  when:
-    (disk_info.disk.size > 40 and host_class == "vmware") or
+  when: (disk_info.disk.size > 40 and host_class == "vmware") or
     (disk_info.disk.size > 10 and host_class == "qemu")
   block:
-
     - name: Extended PV partition
       community.general.parted:
         device: "{{ root_sd }}"
         number: "{{ disk_info.partitions | length }}"
         unit: MiB
-        label: gpt
+        label: "{{ disk_info.disk.table }}"
         part_end: "100%"
         state: present
         resize: true
@@ -29,5 +27,4 @@
         vg: "{{ root_vg }}"
         pvs: "{{ root_pv }}"
         pvresize: true
-
 #

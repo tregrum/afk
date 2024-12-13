@@ -2,7 +2,7 @@
 
 - name: Parse System Class
   ansible.builtin.set_fact:
-    host_class: "{{ ansible_system_vendor.split()[0] | lower }}"
+    host_class: "{{ ansible_product_name.split()[0] | lower }}"
 
 - name: Fix Missing Domain | ifcfg_interface search
   ansible.builtin.lineinfile:

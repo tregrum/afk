@@ -5,7 +5,7 @@
   ansible.builtin.set_fact:
     rpmkeys: "{{ item.value.gpg_key }}"
   with_dict: "{{ repos_enabled }}"
-  when: item.value.gpg_key is defined
+  when: repos_enabled is defined
 
 - name: Import Repo GPG keys 
   ansible.builtin.rpm_key:

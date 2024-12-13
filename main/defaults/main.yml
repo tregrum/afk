@@ -18,25 +18,25 @@ services_enabled: []
 services_disabled: []
 firewall_allow_ports: []
   #
-updates:
+updates: {}
   #
-repos_enabled:
+repos_enabled: {}
   #
-volume_groups:
+volume_groups: {}
   #
-local_mounts:
+local_mounts: {}
   #
-network_mounts:
+network_mounts: {}
   #
-local_groups:
+local_groups: {}
   #
-group_members:
+group_members: {}
   #
-local_accounts:
+local_accounts: {}
   #
-local_paths:
+local_paths: {}
   #
-crontab_entries:
+crontab_entries: {}
   #
-local_acls:
+local_acls: {}
   #

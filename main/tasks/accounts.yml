@@ -25,6 +25,7 @@
     groups: '{{ item.0.key }}'
     append: true
   loop: "{{ group_members | dict2items | subelements('value') }}"
+  when: group_members is defined
 
 - name: Sudoers Create
   community.general.sudoers:
@@ -32,4 +33,5 @@
     commands: ALL
     group: '{{ sudoers_group }}'
     state: present
+  when: sudoers_group is defined
 #
